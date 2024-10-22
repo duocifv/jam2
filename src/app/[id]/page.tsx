@@ -5,16 +5,11 @@ import Image from "next/image";
 import React from "react";
 /* eslint-disable next-on-pages/no-app-nodejs-dynamic-ssg */
 
-
-
-
-
-//export const revalidate = 60
-
-//export const runtime = 'edge';
+const endpoint = process.env.NEXT_PUBLIC_API_URL
+export const runtime = 'edge';
 
 export async function generateStaticParams() {
-  const response:any = await fetch("https://6717b3deb910c6a6e0298d04.mockapi.io/blog");
+  const response:any = await fetch(`${endpoint}/blog`);
 
   if (!response.ok) {
     console.error('Lỗi khi lấy dữ liệu:', response.statusText);
@@ -37,7 +32,7 @@ export async function generateMetadata({
   params: { id: string };
 }){
 
-  const response = await fetch(`https://6717b3deb910c6a6e0298d04.mockapi.io/blog/${params.id}`);
+  const response = await fetch(`${endpoint}/blog/${params.id}`);
 
   if (!response.ok) {
     console.error('Lỗi khi lấy dữ liệu bài viết:', response.statusText);
@@ -58,12 +53,13 @@ export async function generateMetadata({
   };
 }
 
-export default async function Page({
+export default async function PageDetail({
   params,
 }: {
   params: { id: string };
 }) {
-  const response:any = await fetch(`https://6717b3deb910c6a6e0298d04.mockapi.io/blog/${params.id}`);
+  const response:any = await fetch(`${endpoint}/blog/${params.id}`);
+
   if (!response.ok) {
     console.error('Lỗi khi lấy dữ liệu bài viết:', response.statusText);
     return <div>Lỗi khi lấy bài viết.</div>;
