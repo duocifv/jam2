@@ -1,72 +1,55 @@
 import GraphQLQuery from "@/components/GraphQLQuery";
 import cache from "@/lib/graphqlClient";
 import { gql } from "graphql-request";
+import Image from "next/image";
 import React from "react";
+/* eslint-disable next-on-pages/no-app-nodejs-dynamic-ssg */
 
-const Posts = gql`
-  {
-    posts(limit: 10, page: 1) {
-      id
-      title
-    }
-  }
-`;
 
-const Post = gql`
-  query Post($id: ID!) {
-    post(id: $id) {
-      id
-      title
-    }
-  }
-`;
+
+export const runtime = 'edge';
+
+export const revalidate = 60
+
+export const dynamicParams = false
+
 
 export async function generateStaticParams() {
-  const ids = Array.from({ length: 10 }, (_, i) => i + 1);
-  
-  const params:any = [];
+  const response:any = await fetch("https://6717b3deb910c6a6e0298d04.mockapi.io/blog");
+  const posts = await response.json();
 
-  // Tạo params cho trang [id]
-  ids.forEach(id => {
-    params.push({ id: id.toString() });
-    params.push({ id: id.toString(), page: "1" });
-    params.push({ id: id.toString(), page: "2" });
-  });
+  const params = posts.map((post:any) => ({
+    id: post.id.toString() // Chuyển đổi id thành chuỗi
+  }));
 
-  return params;
+  return params; // Trả về danh sách các params cho các trang
 }
 
-//   const result:any = await cache.put([Posts]);
-//   const posts = result?.data?.posts || [];
-//   if (!posts) return [1,2,3,4,5,6,7];
-//   console.log("posts", posts)
-//   return posts.map((post: { id: string }) => ({
-//     id: post.id,
-//   }));
-// }
 
 export async function generateMetadata({
   params,
 }: {
   params: { id: string };
 }){
-  const result:any = await cache.put([Posts]);
-  const posts = result?.posts || [];
-  if (!posts)
-    return {
-      title: "not found",
-      description: "not found",
-    };
+
+  const response = await fetch(`https://6717b3deb910c6a6e0298d04.mockapi.io/blog/${params.id}`);
+  const post:any = await response.json();
+
   return {
-    title: params.id + " - post.title",
-    description: "post.title.slice(0, 50)",
+    title: post.name || "Post not found",
+    description: post.name ? post.name : "No description available",
   };
 }
 
-export default async function DetailHome({
+export default async function Page({
   params,
 }: {
   params: { id: string };
 }) {
-  return <h2>Hello {params.id}</h2>;
+  const response:any = await fetch(`https://6717b3deb910c6a6e0298d04.mockapi.io/blog/${params.id}`);
+  const post:any = await response.json();
+  return <div>
+    <div>{post.name}</div>
+    <div>{post.createdAt}</div>
+  </div>;
 }
