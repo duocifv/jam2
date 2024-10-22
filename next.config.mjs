@@ -9,13 +9,15 @@ if (process.env.NODE_ENV === 'development') {
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  "extends": [
-    "next/core-web-vitals",
-    "plugin:eslint-plugin-next-on-pages/recommended"
-  ],
-  "plugins": [
-    "eslint-plugin-next-on-pages"
-  ]
-};
+  // output: 'export',
+  /* async rewrites() {
+    return [
+      {
+        source: '/api/',
+        destination: 'https://tight-snowflake-8891.duocifv.workers.dev/', 
+      },
+    ]
+  }, */
+}
 
 export default nextConfig;

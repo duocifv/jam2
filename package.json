@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "next start",
     "lint": "next lint",
     "pages:build": "npx @cloudflare/next-on-pages",
@@ -13,6 +14,9 @@
     "cf-typegen": "wrangler types --env-interface CloudflareEnv env.d.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.59.15",
+    "@tanstack/react-query-devtools": "^5.59.15",
+    "graphql-request": "^7.1.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18"
@@ -20,7 +24,6 @@
   "devDependencies": {
     "@cloudflare/next-on-pages": "^1.13.5",
     "@cloudflare/workers-types": "^4.20241018.0",
-    "wrangler": "^3.81.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -30,6 +33,7 @@
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5",
-    "vercel": "^37.11.0"
+    "vercel": "^37.11.0",
+    "wrangler": "^3.81.0"
   }
 }
