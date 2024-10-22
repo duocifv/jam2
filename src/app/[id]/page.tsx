@@ -7,11 +7,11 @@ import React from "react";
 
 
 
-//export const runtime = 'edge';
+
 
 export const revalidate = 60
 
-
+export const runtime = 'edge';
 
 export async function generateStaticParams() {
   const response:any = await fetch("https://6717b3deb910c6a6e0298d04.mockapi.io/blog");
@@ -69,6 +69,10 @@ export default async function Page({
     return <div>Lỗi khi lấy bài viết.</div>;
   }
   const post:any = await response.json();
+
+  const headers = new Headers();
+  headers.set('Cache-Control', 'public, max-age=60, stale-while-revalidate=30');
+
   return <div>
     <div>{post.name}</div>
     <div>{post.createdAt}</div>
