@@ -9,9 +9,9 @@ import React from "react";
 
 
 
-export const revalidate = 60
+//export const revalidate = 60
 
-export const runtime = 'edge';
+//export const runtime = 'edge';
 
 export async function generateStaticParams() {
   const response:any = await fetch("https://6717b3deb910c6a6e0298d04.mockapi.io/blog");
