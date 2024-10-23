@@ -51,8 +51,6 @@ export async function GET(req) {
 
 
 export async function POST(req) {
-  let query;
-
   const cache = caches.default;
   const cacheKey = new Request(`https://products?query=1`).url;
   const cachedResponse = await cache.match(cacheKey);
@@ -66,8 +64,9 @@ export async function POST(req) {
   const result = new Response(JSON.stringify(responseBody), {
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
-      Expires: new Date(Date.now() + 3600 * 1000).toUTCString(),
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
     },
   });
 
