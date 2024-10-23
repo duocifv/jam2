@@ -4,7 +4,7 @@ import { getRequestContext } from '@cloudflare/next-on-pages';
 export const runtime = 'edge';
 
 export async function GET(request: NextRequest) {
-  const ctx = getRequestContext();
+  const ctx:any = getRequestContext();
   const kv = ctx.env.posts;
   await kv.put('exampleKey', 'This is a test value');
   const value = await kv.get('exampleKey');
