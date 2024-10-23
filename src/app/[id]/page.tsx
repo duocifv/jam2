@@ -63,3 +63,7 @@ export default async function PageDetail({
     </HydrationBoundary>
   );
 }
+
+// const newResponse = new Response(response.body, response);
+// newResponse.headers.set('Cache-Control', 'public, max-age=3600, stale-while-revalidate=86400'); // 1 giờ cache trên server
+// return newResponse;
