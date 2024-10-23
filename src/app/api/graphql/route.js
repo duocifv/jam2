@@ -64,7 +64,7 @@ export async function POST(req) {
   const result = new Response(JSON.stringify(responseBody), {
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "no-store, no-cache, must-revalidate", 
+      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
       Expires: new Date(Date.now() + 3600 * 1000).toUTCString(),
     },
   });
