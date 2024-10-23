@@ -48,10 +48,7 @@ export async function GET(req) {
 }
 
 
-// headers: {
-//   "Content-Type": "application/json",
-//   "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-// },
+
 
 export async function POST(req) {
   const cache = caches.default;
@@ -61,16 +58,18 @@ export async function POST(req) {
   if (cachedResponse) {
     return cachedResponse;
   }
+
   const response = await yoga.handle(req);
   const responseBody = await response.json();
   const result = new Response(JSON.stringify(responseBody), {
     headers: {
       "Content-Type": "application/json",
-      "Cache-Control": "private, max-age=0, no-cache, no-store, must-revalidate",
-      "Pragma": "no-cache", // Để hỗ trợ trình duyệt cũ
-      "Expires": "0", // Để phản hồi đã hết hạn ngay lập tức
+      "Cache-Control": "no-store, no-cache, must-revalidate", 
+      Expires: new Date(Date.now() + 0).toUTCString(),
     },
   });
+
   await cache.put(cacheKey, result);
+
   return result;
 }
