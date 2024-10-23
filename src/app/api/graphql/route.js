@@ -65,7 +65,7 @@ export async function POST(req) {
     headers: {
       "Content-Type": "application/json",
       "Cache-Control": "no-store, no-cache, must-revalidate", 
-      Expires: new Date(Date.now() + 0).toUTCString(),
+      Expires: new Date(Date.now() + 3600 * 1000).toUTCString(),
     },
   });
 
