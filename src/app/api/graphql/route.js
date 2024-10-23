@@ -13,11 +13,11 @@ const yoga = createYoga({
 export async function GET(req) {
   const url = new URL(req.url);
   const queryParam = url.searchParams.get("query");
-  console.log("queryParam", queryParam);
   const cache = caches.default;
-  const cacheKey = new Request(`https://products`).url;
+  const params = queryParam;
+  const cacheKey = new Request(`https://products?${params.toString()}`).url;
   const cachedResponse = await cache.match(cacheKey);
-  
+  console.log("params", cacheKey, cachedResponse)
   if (cachedResponse) {
     return cachedResponse;
   }
