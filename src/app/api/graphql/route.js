@@ -6,58 +6,72 @@ export const runtime = "edge";
 
 const yoga = createYoga({
   schema,
-  playground: true,
+  playground: false,
   graphqlEndpoint: "/api/graphql",
 });
 
 export async function GET(req) {
   const url = new URL(req.url);
   const queryParam = url.searchParams.get("query");
+  
+  if (!queryParam) {
+    return new Response(JSON.stringify({ error: "Query parameter is required" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const cache = caches.default;
-  const params = queryParam;
-  const cacheKey = new Request(`https://products?${params.toString()}`).url;
+  const cacheKey = `https://products?query=${encodeURIComponent(queryParam)}`;
+  
   const cachedResponse = await cache.match(cacheKey);
-  console.log("params", cacheKey, cachedResponse)
   if (cachedResponse) {
     return cachedResponse;
   }
+
   const response = await yoga.handle(req);
-  const responseClone = response.clone();
+  const result = await response.text();
+
+  const newResponse = new Response(result, {
+    status: response.status,
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const responseClone = newResponse.clone();
   await cache.put(cacheKey, responseClone, {
     expirationTtl: 300,
   });
-  const headers = new Headers(response.headers);
-  headers.set("Cache-Control", "public, max-age=30, stale-while-revalidate=10");
-  return new Response(response.body, {
-    status: response.status,
-    headers: headers,
-  });
+
+  newResponse.headers.set("Cache-Control", "public, max-age=30, stale-while-revalidate=10");
+
+  return newResponse;
 }
+
+
+
 
 export async function POST(req) {
-  const url = new URL(req.url);
-  const queryParam = url.searchParams.get("query");
+  let query;
+
   const cache = caches.default;
-  const params = queryParam;
-  const cacheKey = new Request(`https://products?${params.toString()}`).url;
+  const cacheKey = new Request(`https://products?query=1`).url;
   const cachedResponse = await cache.match(cacheKey);
-  console.log("params", cacheKey, cachedResponse)
+  console.log("query", cachedResponse)
   if (cachedResponse) {
     return cachedResponse;
   }
-  const response = await yoga.handle(req);
-  const responseClone = response.clone();
-  await cache.put(cacheKey, responseClone, {
-    expirationTtl: 300,
-  });
-  const headers = new Headers(response.headers);
-  headers.set("Cache-Control", "public, max-age=30, stale-while-revalidate=10");
-  return new Response(response.body, {
-    status: response.status,
-    headers: headers,
-  });
-}
 
-// export async function POST(req) {
-//   return yoga.handle(req);
-// }
+  const response = await yoga.handle(req);
+  const responseBody = await response.json();
+  const result = new Response(JSON.stringify(responseBody), {
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+      Expires: new Date(Date.now() + 3600 * 1000).toUTCString(),
+    },
+  });
+
+  await cache.put(cacheKey, result);
+
+  return result;
+}
